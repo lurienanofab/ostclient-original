@@ -16,7 +16,7 @@
 
     Dictionary<string, string> keys = new Dictionary<string, string>(){
 		{"127.0.0.1", 		"BFCCB07172D97BB934253D0709FEC278"}, 	//dev (lnf-jgett)
-		{"141.213.8.37", 	"BFCCB07172D97BB934253D0709FEC278"},	//dev (lnf-jgett)
+		{"141.213.8.37", 	"BFCCB07172D97BB934253D0709FEC278"},	//dev (lnf-jgett upstairs)
 		{"141.213.6.57", 	"6D476797DF31605BCF35BC22C53713AF"},	//dev (lnf-jgett)
 		{"141.213.6.47", 	"3427D4246D379E4C35C9E55ABC1B3799"},	//dev (lnf-pagadala)
 		{"141.213.7.201", 	"4399AAE0740BD6A8E0E5CBE66FF056C5"},	//ssel-sched (public ip)
