@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Helpdesk Ticket Detail</title>
+	<link rel="stylesheet" type="text/css" href="css/ticket.css" />
+    <script type="text/javascript" src="/common/scripts/jquery/jquery-latest.js"></script>
+	<script type="text/javascript" src="js/jquery.ticket.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+			$.ticket.ajaxUrl = "ajax.aspx";
+            $(".ticket-detail").ticket({
+				"ticketID": $.ticket.query.ticketID,
+				"source": $.ticket.query.source
+			});
+        });
+    </script>
+</head>
+<body>
+    <div class="ticket-detail"></div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+.ticket-detail h4 {
+    color: #006699;
+    font-size: 13.5px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.ticket-section {
+    padding: 10px;
+    border: solid 1px #ddd;
+    border-radius: 5px;
+}
+
+    .ticket-section .form-group {
+        margin-bottom: 3px;
+    }
+
+        .ticket-section .form-group .property-value {
+            padding-top: 5px;
+        }
+
+.thread-message-subject,
+.thread-response-subject {
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.thread-message-subject {
+    background-color: #d6ebff;
+}
+
+.thread-response-subject {
+    background-color: #fbe5c5;
+}
+
+.thread-message-body,
+.thread-response-body {
+    padding: 5px 10px 10px 10px;
+}
+
+.ticket-form {
+    padding: 30px;
+}
+
+/*===== OLD =====*/
+
+.container .header {
+    border-bottom: solid 1px #000000;
+}
+
+.container .info {
+    padding: 5px;
+}
+
+    .container .info .info-table {
+        width: 100%;
+    }
+
+.container .thread {
+    padding: 5px;
+}
+
+    .container .thread .message-table {
+        width: 100%;
+        margin-top: 5px;
+        border-collapse: collapse;
+        border: solid 1px #adadad;
+    }
+
+        .container .thread .message-table td {
+            padding: 5px;
+        }
+
+            .container .thread .message-table td.message-header {
+                border-bottom: solid 1px #000000;
+                background-color: #c3d9ff;
+                font-weight: bold;
+            }
+
+            .container .thread .message-table td.message-content {
+            }
+
+    .container .thread .response-table {
+        width: 100%;
+        margin-top: 5px;
+        border-collapse: collapse;
+        border: solid 1px #adadad;
+    }
+
+        .container .thread .response-table td {
+            padding: 5px;
+        }
+
+            .container .thread .response-table td.response-header {
+                border-bottom: solid 1px #000000;
+                background-color: #ffe0b3;
+                font-weight: bold;
+            }
+
+            .container .thread .response-table td.response-content {
+            }
+
+.container .form {
+    padding: 5px 50px 5px 50px;
+    margin-bottom: 20px;
+}
+
+    .container .form .post-button {
+        background-color: #db8606;
+        border: 1px solid #666666;
+        color: #ffffff;
+        text-shadow: -1px -1px 1px #000000;
+        font-weight: bold;
+    }

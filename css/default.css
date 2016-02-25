@@ -1,0 +1,36 @@
+html, body{
+	padding: 0;
+	margin: 0;
+}
+
+body, input{
+	font-family: 'Courier New';
+	font-size: 10pt;
+}
+
+section{
+	padding: 5px;
+}
+
+.page-title{
+	padding: 5px;
+	background-color: #228822;
+	margin-bottom: 10px;
+	color: #dadada;
+	font-weight: bold;
+	font-size: 12pt;
+	border-bottom: solid 3px #aaccaa;
+}
+
+.tickets{
+	margin-top: 10px;
+}
+
+.tickets table td, .tickets table th{
+	border: solid 1px #808080;
+	padding: 5px;
+}
+
+.tickets table th{
+	background-color: #aaccaa;
+}
