@@ -1,4 +1,21 @@
 (function($){
+	
+	function user(data){
+		this.IsAuthenticated = false;
+		this.FName = "";
+		this.LName = "";
+		this.Email = "";
+		this.ClientID = 0;
+		
+		if (data){
+			this.IsAuthenticated = true;
+			this.FName = data.FName;
+			this.LName = data.LName;
+			this.Email = data.PrimaryEmail;
+			this.ClientID = data.ClientID;
+		}
+	}
+	
 	function ticket(){
 		var self = this;
 		
@@ -8,19 +25,26 @@
 		this.getUserInfo = function(callback){
 			if (typeof callback != 'function')
 				callback = function(success){console.log(success);};
+			
+			var cb = function(flag){
+				if (typeof callback == 'function')
+					callback(flag);
+			}
+			
 			$.ajax({
-				'url': '/os/usercheck',
+				'url': '/webapi/data/client/current',
 				'type': 'GET',
-				'dataType': 'json',
-				'success': function(data){
-					self.user = data;
-					if (typeof callback == 'function')
-						callback(true);
-				},
-				'error': function(err){
+				'dataType': 'json'
+			}).done(function(data, textStatus, jqXHR){
+				self.user = new user(data);
+				cb(true);
+			}).fail(function(jqXHR, textStatus, errorThrown){
+				if (jqXHR.status == 401){
+					self.user = new user();
+					cb(true);
+				}else{
 					self.user = null;
-					if (typeof callback == 'function')
-						callback(false);
+					cb(false);
 				}
 			});
 		}
@@ -30,6 +54,7 @@
 				callback = function(result){console.log(result);};
 			if (self.ajaxUrl){
 				self.getUserInfo(function(success){
+					console.log(self.user);
 					if (success){
 						if (self.user.IsAuthenticated){
 							var name = self.user.FName + ' ' + self.user.LName;

@@ -6,6 +6,7 @@
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Text" %>
 <%@ Import Namespace="System.Web.Script.Serialization" %>
+<%@ Import Namespace="Newtonsoft.Json" %>
 
 <script runat="server">
 	const string API_URL = "https://lnf.umich.edu/helpdesk/api/data-exec.php";
@@ -13,22 +14,27 @@
 	int? errno = null;
 	string error = null;
 	string command = null;
-    string smtpHost = "mail-relay.itd.umich.edu";
 
-	Dictionary<string, string> keys = new Dictionary<string, string>(){
-		{"141.213.8.37", 	"BFCCB07172D97BB934253D0709FEC278"},
-		{"141.213.7.201", 	"4399AAE0740BD6A8E0E5CBE66FF056C5"},
-		{"192.168.168.200",	"4399AAE0740BD6A8E0E5CBE66FF056C5"},
-        {"10.0.0.200",	    "4399AAE0740BD6A8E0E5CBE66FF056C5"},
-		{"192.168.1.241",	"4399AAE0740BD6A8E0E5CBE66FF056C5"}
-	};
-
+	dynamic getConfig(){
+		string configFilePath = Path.Combine(Server.MapPath("."), "config.json");
+		
+		if (File.Exists(configFilePath)){
+			string content = File.ReadAllText(configFilePath);
+			var config = JsonConvert.DeserializeAnonymousType(content, new {ApiKey = "", SmtpHost = ""});
+			return config;
+		} else {
+			throw new Exception("Missing config file: "+configFilePath);
+		}
+	}
+	
 	string getApiKey(){
-		string ip = Request.ServerVariables["LOCAL_ADDR"];
-		if (keys.ContainsKey(ip))
-			return keys[ip];
-		else
-			throw new Exception("Missing API Key for IP Address: "+ip);
+		var config = getConfig();
+		return config.ApiKey;
+	}
+	
+	string getSmtpHost(){
+		var config = getConfig();
+		return config.SmtpHost;
 	}
 
 	string apiPost(Dictionary<string, string> data, int timeout = 5000){
@@ -126,7 +132,7 @@
 	string addTicket(string resource_id, string email, string name, string queue, string subject, string message, string pri, string search, string cc){
 		if (!string.IsNullOrEmpty(cc))
 		{
-			using (SmtpClient client = new SmtpClient(smtpHost))
+			using (SmtpClient client = new SmtpClient(getSmtpHost()))
 			using (MailMessage mm = new MailMessage("system@lnf.umich.edu", cc, subject, message))
 				client.Send(mm);
 		}
@@ -221,17 +227,6 @@
 					resources = request("resources");
 					Response.Write(getSummary(resources));
 					break;
-                case "debug":
-                    string ip = Request.ServerVariables["LOCAL_ADDR"];
-                    string key = string.Empty;
-                    if (keys.ContainsKey(ip))
-                        key = keys[ip];
-                    else
-                        key = "Missing API Key for IP Address: "+ip;
-                        
-                    Response.Write("{\"ip\":\""+ip+"\", \"key\":\""+key+"\"}");
-                    
-                    break;
 				default:
 					if (string.IsNullOrEmpty(command))
 						Response.Write("{\"error\":true, \"errno\":500, \"message\":\"Missing command\"}");
