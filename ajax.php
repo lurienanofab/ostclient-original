@@ -5,14 +5,10 @@ $errno = null;
 $error = null;
 $command = null;
 
-$keys = array(	
-	"127.0.0.1"         => "BFCCB07172D97BB934253D0709FEC278",  //dev (lnf-jgett)
-	"141.213.8.37"      => "BFCCB07172D97BB934253D0709FEC278",  //dev (lnf-jgett)
-	"141.213.7.201"     => "4399AAE0740BD6A8E0E5CBE66FF056C5",  //ssel-sched (public ip)
-	"192.168.168.200"   => "4399AAE0740BD6A8E0E5CBE66FF056C5",  //ssel-sched (server lan ip)
-	"192.168.1.241"     => "4399AAE0740BD6A8E0E5CBE66FF056C5",  //ssel-sched (control lan ip)
-	"141.213.7.202"     => "07C53845F0BC2551C7ECBB948E73E65E",  //ssel-apps (public ip)
-	"192.168.168.125"   => "07C53845F0BC2551C7ECBB948E73E65E"   //ssel-apps (server lan ip)
+$keys = array(
+	'141.213.8.37'		=> 'BFCCB07172D97BB934253D0709FEC278',
+	'141.213.7.201'		=> '4399AAE0740BD6A8E0E5CBE66FF056C5',
+	'192.168.168.200'	=> '4399AAE0740BD6A8E0E5CBE66FF056C5'
 );
 
 function getApiKey(){
