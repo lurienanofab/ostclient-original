@@ -1,6 +1,7 @@
 <%@ Page Language="C#" %>
 
 <%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Web.Security" %>
 <%@ Import Namespace="System.Net" %>
 <%@ Import Namespace="System.Net.Mail" %>
 <%@ Import Namespace="System.IO" %>
@@ -35,6 +36,21 @@
 	string getSmtpHost(){
 		var config = getConfig();
 		return config.SmtpHost;
+	}
+	
+	string userCheck(){
+		string result = "";
+		HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://ssel-apps.eecs.umich.edu/webapi/data/client/current");
+		var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+		string token = authCookie.Value;
+		req.Headers[HttpRequestHeader.Authorization] = string.Format("Forms {0}", token);
+		HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+		Stream dataStream = resp.GetResponseStream();
+		StreamReader reader = new StreamReader(dataStream);
+		result = reader.ReadToEnd();
+		reader.Close();
+		resp.Close();
+		return result;
 	}
 
 	string apiPost(Dictionary<string, string> data, int timeout = 5000){
@@ -149,6 +165,7 @@
 			{"search", search},
 			{"format", "json"}
 		}, 120000);
+        
 		return result;
 	}
 
@@ -191,6 +208,9 @@
 		string cc = string.Empty;
 		try{
 			switch(command){
+				case "user-check":
+					Response.Write(userCheck());
+					break;
 				case "select-tickets-by-email":
 					email = request("email");
 					Response.Write(selectTicketsByEmail(email));

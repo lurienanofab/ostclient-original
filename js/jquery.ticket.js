@@ -11,7 +11,7 @@
 			this.IsAuthenticated = true;
 			this.FName = data.FName;
 			this.LName = data.LName;
-			this.Email = data.PrimaryEmail;
+			this.Email = data.PrimaryEmail || data.Email;
 			this.ClientID = data.ClientID;
 		}
 	}
@@ -32,7 +32,7 @@
 			}
 			
 			$.ajax({
-				'url': '/webapi/data/client/current',
+				'url': 'ajax.aspx?command=user-check',
 				'type': 'GET',
 				'dataType': 'json'
 			}).done(function(data, textStatus, jqXHR){
@@ -54,7 +54,6 @@
 				callback = function(result){console.log(result);};
 			if (self.ajaxUrl){
 				self.getUserInfo(function(success){
-					console.log(self.user);
 					if (success){
 						if (self.user.IsAuthenticated){
 							var name = self.user.FName + ' ' + self.user.LName;
