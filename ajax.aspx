@@ -135,7 +135,7 @@
         return result;
     }
     
-    string SelectTicketsByDate(string sdate, string edate, string status)
+    string SelectTicketsByDate(string sdate, string edate, string resource_id, string email, string name, string assigned_to, string status, string format)
     {
         DateTime sd;
         DateTime ed;
@@ -152,14 +152,38 @@
             
         if (string.IsNullOrEmpty(status))
             status = "open";
+        
+        if (string.IsNullOrEmpty(format))
+            format = "xml"; //default
+        
+        if (format == "xml")
+            Response.ContentType = "text/xml";
+        else if (format == "json")
+            Response.ContentType = "application/json";
+        else
+            Response.ContentType = "text/plain";
             
-        string result = ApiPost(new Dictionary<string, string>
+        var args = new Dictionary<string, string>
         {
             {"sdate", sd.ToString("yyyy-MM-dd")},
             {"edate", ed.ToString("yyyy-MM-dd")},
             {"status", status},
-            {"format", "json"}
-        });
+            {"format", format}
+        };
+        
+        if (!string.IsNullOrEmpty(resource_id))
+            args.Add("resource_id", resource_id);
+        
+        if (!string.IsNullOrEmpty(email))
+            args.Add("email", email);
+        
+        if (!string.IsNullOrEmpty(name))
+            args.Add("name", name);
+        
+        if (!string.IsNullOrEmpty(assigned_to))
+            args.Add("assigned_to", assigned_to);
+        
+        string result = ApiPost(args);
         
         return result;
     }
@@ -271,6 +295,8 @@
         string sdate = string.Empty;
         string edate = string.Empty;
         string status = string.Empty;
+        string format = string.Empty;
+        string assigned_to = string.Empty;
         
         try
         {
@@ -290,8 +316,13 @@
                 case "select-tickets-by-date":
                     sdate = GetRequestVar("sdate");
                     edate = GetRequestVar("edate");
+                    resource_id = GetRequestVar("resource_id");
+                    email = GetRequestVar("email");
+                    name = GetRequestVar("name");
+                    assigned_to = GetRequestVar("assigned_to");
                     status = GetRequestVar("status");
-                    Response.Write(SelectTicketsByDate(sdate, edate, status));
+                    format = GetRequestVar("format");
+                    Response.Write(SelectTicketsByDate(sdate, edate, resource_id, email, name, assigned_to, status, format));
                     break;
                 case "dump-server-vars":
                     Response.Write(DumpServerVars());
