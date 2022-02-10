@@ -2,16 +2,16 @@
 <html>
 <head>
     <title>Helpdesk Ticket Detail</title>
-	<link rel="stylesheet" type="text/css" href="css/ticket.css" />
+    <link rel="stylesheet" type="text/css" href="css/ticket.css" />
     <script type="text/javascript" src="//ssel-apps.eecs.umich.edu/static/lib/jquery/jquery.min.js"></script>
-	<script type="text/javascript" src="js/jquery.ticket.js"></script>
+    <script type="text/javascript" src="js/jquery.ticket.js?v=20211214"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-			$.ticket.ajaxUrl = "ajax.aspx";
+            $.ticket.ajaxUrl = "ajax.aspx";
             $(".ticket-detail").ticket({
-				"ticketID": $.ticket.query.ticketID,
-				"source": $.ticket.query.source
-			});
+                "ticketID": $.ticket.query.ticketID,
+                "source": $.ticket.query.source
+            });
         });
     </script>
 </head>

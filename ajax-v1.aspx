@@ -10,9 +10,9 @@
 <%@ Import Namespace="Newtonsoft.Json" %>
 
 <script runat="server">
-    //VERSION 2
+    //VERSION 1
 
-    const string API_URL = "https://lnf-help.eecs.umich.edu/api/lnf";
+    const string API_URL = "https://lnf.umich.edu/helpdesk/api/data-exec.php";
 
     int? errno = null;
     string error = null;
@@ -49,28 +49,16 @@
     string UserCheck()
     {
         string result = "";
-
-        //string cookieName = FormsAuthentication.FormsCookieName;
-        string cookieName = "sselAuth.cookie";
-
-        var authCookie = Request.Cookies[cookieName];
-        if (authCookie == null)
-            throw new Exception("No auth cookie was found named: " + FormsAuthentication.FormsCookieName);
-
-        string token = authCookie.Value;
-
         HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://ssel-apps.eecs.umich.edu/webapi/data/client/current");
+        var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+        string token = authCookie.Value;
         req.Headers[HttpRequestHeader.Authorization] = string.Format("Forms {0}", token);
-
         HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-
         Stream dataStream = resp.GetResponseStream();
         StreamReader reader = new StreamReader(dataStream);
-
         result = reader.ReadToEnd();
         reader.Close();
         resp.Close();
-
         return result;
     }
 
@@ -94,7 +82,7 @@
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
             req.ContentLength = postBytes.Length;
-            req.Headers.Add("X-API-Key", GetApiKey());
+            req.UserAgent = GetApiKey();
             dataStream = req.GetRequestStream();
             dataStream.Write(postBytes, 0, postBytes.Length);
             dataStream.Close();
@@ -226,13 +214,10 @@
 
     string PostMessage(string ticketID, string message)
     {
-        var user = JsonConvert.DeserializeAnonymousType(UserCheck(), new {Email = ""});
-
         string result = ApiPost(new Dictionary<string, string>
         {
             {"action", command},
             {"ticketID", ticketID},
-            {"email", user.Email},
             {"message", message},
             {"format", "json"}
         }, 10000);
@@ -240,7 +225,7 @@
         return result;
     }
 
-    string AddTicket(string resource_id, string email, string name, string queue, string subject, string message, string pri, string ticket_type, string search, string cc)
+    string AddTicket(string resource_id, string email, string name, string queue, string subject, string message, string pri, string search, string cc)
     {
         if (!string.IsNullOrEmpty(cc))
         {
@@ -248,21 +233,7 @@
             using (MailMessage mm = new MailMessage("system@lnf.umich.edu", cc, subject, message))
                 client.Send(mm);
         }
-
-        string topic_id = string.Empty;
-        int priority_id, helptopic_id;
-        GetPriorityAndHelpTopic(ticket_type, "scheduler", out priority_id, out helptopic_id);
         
-        if (priority_id > 0)
-            pri = priority_id.ToString();
-        if (helptopic_id > 0)
-            topic_id = helptopic_id.ToString();
-
-        if (resource_id == "999999" && false)
-        {
-            throw new Exception(string.Format("priority_id = {0}, helptopic_id = {1}, pri = {2}, topic_id = {3}, ticket_type = {4}", priority_id, helptopic_id, pri, topic_id, ticket_type));
-        }
-
         string result = ApiPost(new Dictionary<string, string>
         {
             {"action", command},
@@ -273,7 +244,6 @@
             {"subject", subject},
             {"message", message},
             {"pri", pri},
-            {"topic_id", topic_id},
             {"search", search},
             {"format", "json"}
         }, 120000);
@@ -306,60 +276,8 @@
         return result;
     }
 
-    void GetPriorityAndHelpTopic(string ticket_type, string caller, out int priority_id, out int helptopic_id)
-    {
-        priority_id = 0;
-        helptopic_id = 0;
-
-        if (caller == "scheduler")
-        {
-            switch (ticket_type)
-            {
-                case "0": // General Question
-                    priority_id = 1;    // Low priority
-                    helptopic_id = 2;   // Equipment Support / General Questions
-                    break;
-                case "1": // Process Issue
-                    priority_id = 2;    // Normal priority
-                    helptopic_id = 13;  // Equipment Support / Process Issue
-                    break;
-                case "2": // Hardware Issue
-                    priority_id = 3;    // High priority
-                    helptopic_id = 14;  // Equipment Support / Hardware Issue
-                    break;
-                case "3": // Training/Checkout
-                    priority_id = 1;    // Low priority
-                    helptopic_id = 8;  // Equipment Support / Training/Checkout
-                    break;
-            }
-        }
-        else if (caller == "help")
-        {
-            switch (ticket_type)
-            {
-                case "chemical":
-                    priority_id = 1;    // Low priority
-                    helptopic_id = 4;   // Management Support / Chemicals
-                    break;
-                case "supplies":
-                    priority_id = 2;    // Normal priority
-                    helptopic_id = 3;   // Management Support / Lab Supplies
-                    break;
-                case "equipment":
-                    priority_id = 2;    // Normal priority
-                    helptopic_id = 10;  // Management Support / Non-Interlocked Equipment
-                    break;
-                case "other":
-                    priority_id = 1;    // Low priority
-                    helptopic_id = 6;   // Management Support / Other
-                    break;
-            }
-        }
-    }
-
     void Page_Load(object sender, EventArgs e)
     {
-        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         Response.ContentType = "application/json";
         command = (!string.IsNullOrEmpty(Request["command"])) ? Request["command"] : string.Empty;  
         string ticketID = string.Empty;
@@ -372,7 +290,6 @@
         string location = string.Empty;
         string subject = string.Empty;
         string pri = string.Empty;
-        string ticket_type = string.Empty;
         string search = string.Empty;
         string resources = string.Empty;
         string resource_id = string.Empty;
@@ -429,10 +346,9 @@
                     subject = GetRequestVar("subject");
                     message = GetRequestVar("message");
                     pri = GetRequestVar("pri");
-                    ticket_type = GetRequestVar("ticket_type");
                     search = GetRequestVar("search"); //"by-resource", "by-email" or ""
                     cc = GetCc();
-                    Response.Write(AddTicket(resource_id, email, name, queue, subject, message, pri, ticket_type, search, cc));
+                    Response.Write(AddTicket(resource_id, email, name, queue, subject, message, pri, search, cc));
                     break;
                 case "summary":
                     resources = GetRequestVar("resources");
