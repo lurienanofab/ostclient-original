@@ -64,7 +64,7 @@
             var selectTicketsByEmail = function(email){
                 $.ajax({
                     url: $this.data('url'),
-                    type: 'post',
+                    type: 'get',
                     data: {command: 'select-tickets-by-email', 'email': email},
                     dataType: 'json',
                     success: function(data){
