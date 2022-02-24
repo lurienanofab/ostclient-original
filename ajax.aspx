@@ -123,13 +123,13 @@
         return content;
     }
 
-    string SelectTicketsByEmail(string email)
+    string SelectTicketsByEmail(string email, string status)
     {
         string result = ApiPost(new Dictionary<string, string>
         {
             {"action", command},
             {"email", email},
-            {"status", "open"},
+            {"status", status},
             {"format", "json"}
         });
         
@@ -392,7 +392,8 @@
                     break;
                 case "select-tickets-by-email":
                     email = GetRequestVar("email");
-                    Response.Write(SelectTicketsByEmail(email));
+                    status = GetRequestVar("status");
+                    Response.Write(SelectTicketsByEmail(email, status));
                     break;
                 case "select-tickets-by-resource":
                     resource_id = GetRequestVar("resource_id");

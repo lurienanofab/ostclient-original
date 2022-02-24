@@ -22,8 +22,7 @@
         constructor() {
             var self = this;
 
-            this.user = null;
-            this.ajaxUrl = null;
+            this.ajaxUrl;
 
             this.getUserInfo = function (callback) {
                 if (typeof callback != 'function')
@@ -35,7 +34,7 @@
                 };
 
                 $.ajax({
-                    'url': 'ajax.aspx?command=user-check',
+                    'url': self.ajaxUrl + '?command=user-check',
                     'type': 'GET',
                     'dataType': 'json'
                 }).done(function (data, textStatus, jqXHR) {
@@ -89,10 +88,9 @@
                         else
                             callback({ 'error': 'An error occurred while retrieving user information.' });
                     });
-                }
-
-                else
+                } else {
                     callback({ 'error': '$.ticket.ajaxUrl is undefined' });
+                }
             };
 
             this.postMessage = function (ticketID, message, source, callback) {
@@ -136,10 +134,9 @@
                         else
                             callback({ 'error': 'An error occurred while retrieving user information.' });
                     });
-                }
-
-                else
+                } else {
                     callback({ 'error': '$.ticket.ajaxUrl is undefined' });
+                }
             };
 
             this.formatDate = function (date, format) {
@@ -273,11 +270,13 @@
 
     $.ticket = new Ticket();
 
-    $.fn.ticket = function(options){			
+    $.fn.ticket = function(options){
         return this.each(function(){
             var $this = $(this);
             
-            var opt = $.extend({}, {"source": $this.data("source"), "ticketID": $this.data("ticketID"), "onload": function(ticket){}}, options);
+            var opt = $.extend({}, {apiurl: $this.data("apiurl"), "source": $this.data("source"), "ticketID": $this.data("ticketID"), "onload": function(ticket){}}, options);
+            
+            $.ticket.ajaxUrl = opt.apiurl;
             $this.data("source", opt.source);
             $this.data("ticketID", opt.ticketID);
             
@@ -489,14 +488,14 @@
                 });
             }
             
-            if ($.ticket.ajaxUrl){
+            if ($.ticket.ajaxUrl) {
                 if (opt.ticketID)
                     loadTicketDetail(opt.ticketID);
                 else
                     loadError('Missing parameter: ticketID');
-            }
-            else
+            } else {
                 loadError('$.ticket.ajaxUrl is undefined');
+            }
         });
     }
 }(jQuery));
