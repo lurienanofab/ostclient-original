@@ -125,6 +125,9 @@
 
     string SelectTicketsByEmail(string email, string status)
     {
+        if (string.IsNullOrEmpty(status))
+            status = "open";
+
         string result = ApiPost(new Dictionary<string, string>
         {
             {"action", command},
